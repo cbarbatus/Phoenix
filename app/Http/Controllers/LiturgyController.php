@@ -6,18 +6,20 @@ use App\Models\Ritual;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Storage;
 
 class LiturgyController extends Controller
-{    /**
+{
+    /**
      * Narrow selection of liturgies.
      */
     public function find(): View
     {
-        if (Auth::check()) return view('/liturgy.find');
-        else return redirect('/');
+        if (Auth::check()) {
+            return view('/liturgy.find');
+        } else {
+            return redirect('/');
+        }
     }
-
 
     /**
      * List the selected rituals.
@@ -41,9 +43,9 @@ class LiturgyController extends Controller
 
             return view('liturgy.list', compact('rituals'));
         }
+
         return redirect('/');
     }
-
 
     /**
      * Download the .docx for the ritual.
@@ -55,13 +57,13 @@ class LiturgyController extends Controller
         if (Auth::check()) {
             $ritual = Ritual::findOrFail($id);
 
-            $fileName = $ritual->liturgy_base . '.docx';
+            $fileName = $ritual->liturgy_base.'.docx';
             $location = storage_path('app/grove');
-            $fullName = $location . '/' . $fileName;
+            $fullName = $location.'/'.$fileName;
 
             return response()->file($fullName);
         }
+
         return redirect('/');
     }
-
 }

@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\{Models\Contact, Models\Section};
+use App\Models\Contact;
+use App\Models\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 

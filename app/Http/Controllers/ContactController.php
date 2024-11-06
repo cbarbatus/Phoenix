@@ -113,7 +113,7 @@ class ContactController extends Controller
 
     public function submit(Request $request): RedirectResponse
     {
-        $contact = new Contact();
+        $contact = new Contact;
         $item = request('name');
         $contact->name = ($item === null) ? '' : $item;
         $item = request('email');

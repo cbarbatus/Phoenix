@@ -91,7 +91,7 @@ class VoteController extends Controller
                 ->where('motion_id', '=', $motion_id)
                 ->first();
             if (is_null($vote)) {
-                $vote = new Vote();
+                $vote = new Vote;
             }
             $vote->member_id = $member_id;
             $vote->motion_id = $motion_id;
@@ -169,7 +169,7 @@ class VoteController extends Controller
      */
     public function create(Request $request): RedirectResponse
     {
-        $motion = new Motion();
+        $motion = new Motion;
         $motion->status = 'open';
         $motion->member_id = request('member_id');
         $motion->item = request('motion');

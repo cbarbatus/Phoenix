@@ -81,7 +81,7 @@ class BookController extends Controller
          * @param  \Illuminate\Http\Request  $request
          * @return \Illuminate\Http\Response
          */
-        $book = new book();
+        $book = new book;
         $item = request('type');
         $book->type = ($item === null) ? '' : $item;
         $item = request('category');

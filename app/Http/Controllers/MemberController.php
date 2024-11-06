@@ -17,13 +17,13 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(bool $full=null)
+    public function index(?bool $full = null)
     {
 
         if (Auth::check()) {
             $user = Auth::user();
 
-                $members = Member::whereIn('category', ['Elder', 'Member'])
+            $members = Member::whereIn('category', ['Elder', 'Member'])
                 ->where('status', '=', 'current')
                 ->orderBy('first_name')->orderBy('last_name')
                 ->get();
@@ -45,10 +45,11 @@ class MemberController extends Controller
         $change_all = $user->can('change all');
         $change_own = $user->can('change own');
         $change_members = $user->can('change members');
+
         return view('members.index', compact('members', 'change_all', 'change_own', 'change_members', 'user'));
     }
 
-        /**
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -57,13 +58,13 @@ class MemberController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole('joiner'))
+            if ($user->hasRole('joiner')) {
                 return view('members.join');
+            }
         }
+
         return redirect('/');
     }
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -74,12 +75,12 @@ class MemberController extends Controller
         /**
          * Store a newly created resource in storage.
          *
-         * @param \Illuminate\Http\Request $request
+         * @param  \Illuminate\Http\Request  $request
          * @return \Illuminate\Http\Response
          */
         if (Auth::check()) {
             $user = Auth::user();
-            $member = new member();
+            $member = new member;
             $item = request('first_name');
             $first_name = ($member->first_name = ($item === null) ? '' : '_'.$item);
             $item = request('last_name');
@@ -101,8 +102,8 @@ class MemberController extends Controller
             $member->joined = ($item === null) ? '' : $item;
             $item = request('adf');
             $member->adf = ($item === null) ? '' : $item;
-            $user = new user();
-            $user->name = $first_name . ' ' . $last_name;
+            $user = new user;
+            $user->name = $first_name.' '.$last_name;
             $user->email = $email;
             $user->password = '';
             $user->save();
@@ -112,9 +113,9 @@ class MemberController extends Controller
             $member->user_id = $user->id;
             $member->save();
         }
+
         return redirect('/')->with('message', '  Join form accepted.');
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -125,9 +126,11 @@ class MemberController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole(['admin', 'scribe']))
+            if ($user->hasRole(['admin', 'scribe'])) {
                 return view('members.create');
+            }
         }
+
         return redirect('/');
     }
 
@@ -140,12 +143,12 @@ class MemberController extends Controller
         /**
          * Store a newly created resource in storage.
          *
-         * @param \Illuminate\Http\Request $request
+         * @param  \Illuminate\Http\Request  $request
          * @return \Illuminate\Http\Response
          */
         if (Auth::check()) {
             $user = Auth::user();
-            $member = new member();
+            $member = new member;
             $item = request('first_name');
             $first_name = ($member->first_name = ($item === null) ? '' : $item);
             $item = request('last_name');
@@ -170,8 +173,8 @@ class MemberController extends Controller
             $member->joined = ($item === null) ? '' : $item;
             $item = request('adf');
             $member->adf = ($item === null) ? '' : $item;
-            $user = new user();
-            $user->name = $first_name . ' ' . $last_name;
+            $user = new user;
+            $user->name = $first_name.' '.$last_name;
             $user->email = $email;
             $user->password = '';
             $user->save();
@@ -181,9 +184,9 @@ class MemberController extends Controller
             $member->user_id = $user->id;
             $member->save();
         }
-            return redirect('/members');
-    }
 
+        return redirect('/members');
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -195,6 +198,7 @@ class MemberController extends Controller
             $member = Member::findOrFail($id);
             $change_members = $user->can('change members');
         }
+
         return view('members.edit', compact('member', 'change_members'));
     }
 
@@ -234,15 +238,17 @@ class MemberController extends Controller
             $user = User::find($member->user_id);
             if ($user !== null) {
                 $user->email = $member->email;
-                $user->name = $member->first_name . " " . $member->last_name;
+                $user->name = $member->first_name.' '.$member->last_name;
                 $user->save();
                 $status = $member->status;
                 if ($status != 'Current') {
                     $user->delete();
+
                     return redirect('/members')->with('success', 'Member was updated, User was removed');
                 }
             }
         }
+
         return redirect('/members')->with('success', 'Member was updated');
     }
 
@@ -257,10 +263,12 @@ class MemberController extends Controller
             $user = Auth::user();
             if ($user->hasRole(['admin', 'scribe'])) {
                 $member = Member::findOrFail($id);
-                $name = $member->first_name . ' ' . $member->last_name;
-                return view('/members.sure', ['id' => $id, 'name'=> $name]);
+                $name = $member->first_name.' '.$member->last_name;
+
+                return view('/members.sure', ['id' => $id, 'name' => $name]);
             }
         }
+
         return redirect('/');
     }
 
@@ -277,19 +285,16 @@ class MemberController extends Controller
                 $user->delete();
                 $member->delete();
             }
+
             return redirect('/members')->with('success', 'Member was deleted');
         }
 
         return redirect('/');
     }
 
-
     /**
      * Restore a Resigned member
-     *
-     *
      */
-
     public function restore(Request $request)
     {
         $user = Auth::user();
@@ -304,14 +309,13 @@ class MemberController extends Controller
                 ->where('last_name', '=', $last_name)
                 ->first();
 
-
             if ($member !== null) {
 
                 $member->status = 'Current';
                 $member->save();
 
-                $user = new user();
-                $user->name = $first_name . ' ' . $last_name;
+                $user = new user;
+                $user->name = $first_name.' '.$last_name;
                 $user->email = $member->email;
                 $user->password = '';
                 $user->assignRole('member');
@@ -321,10 +325,10 @@ class MemberController extends Controller
                 $member->save();
 
             }
+
             return redirect('/members');
         }
 
         return redirect('/');
     }
-
 }

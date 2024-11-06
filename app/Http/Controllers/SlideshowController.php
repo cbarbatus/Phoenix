@@ -24,8 +24,9 @@ class SlideshowController extends Controller
             ->orderBy('year', 'desc')
             ->get();
         $activeYears = [];
-        foreach ($years as $year)
+        foreach ($years as $year) {
             $activeYears[] = $year->year;
+        }
 
         $names = DB::table('slideshows')
             ->select('name')
@@ -36,9 +37,9 @@ class SlideshowController extends Controller
         foreach ($names as $name) {
             $activeNames[] = $name->name;
         }
+
         return view('slideshows.index', compact('slideshows', 'activeYears', 'activeNames', 'admin'));
     }
-
 
     /**
      * Find one slideshow from year and name
@@ -92,9 +93,11 @@ class SlideshowController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole('admin'))
+            if ($user->hasRole('admin')) {
                 return view('slideshows.create');
+            }
         }
+
         return redirect('/')->with('warning', 'Login is needed.');
     }
 
@@ -103,7 +106,7 @@ class SlideshowController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $slideshow = new Slideshow();
+        $slideshow = new Slideshow;
         $item = request('year');
         $slideshow->year = ($item === null) ? '' : $item;
         $item = request('name');
@@ -118,7 +121,6 @@ class SlideshowController extends Controller
 
         return redirect('/slideshows/1/list');
     }
-
 
     /**
      * Show the form for editing the specified resource.

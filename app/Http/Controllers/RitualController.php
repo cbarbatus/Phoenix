@@ -8,7 +8,6 @@ use App\Models\Slideshow;
 use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -19,19 +18,19 @@ class RitualController extends Controller
      */
     public function list(bool $admin): View|RedirectResponse
     {
-            $rituals = Ritual::all();
-            $years = DB::table('rituals')
-                ->select('year')
-                ->groupBy('year')
-                ->orderby('year', 'DESC')
-                ->get()->toArray();
-            $activeYears = [];
-            foreach ($years as $year) {
-                $activeYears[] = $year->year;
-            }
+        $rituals = Ritual::all();
+        $years = DB::table('rituals')
+            ->select('year')
+            ->groupBy('year')
+            ->orderby('year', 'DESC')
+            ->get()->toArray();
+        $activeYears = [];
+        foreach ($years as $year) {
+            $activeYears[] = $year->year;
+        }
 
         return view('rituals.index', compact('rituals', 'activeYears', 'admin'));
-   }
+    }
 
     /**
      * Display a listing of one year if not admin.
@@ -72,6 +71,7 @@ class RitualController extends Controller
             ->first();
         if ($admin) {
             $locations = Venue::all();
+
             return view('rituals.edit', compact('ritual', 'locations'));
         }
 
@@ -107,6 +107,7 @@ class RitualController extends Controller
             $venue = Venue::where('name', '=', $announcement->venue_name)->first();
             $venue_title = $venue->title;
         }
+
         return view('rituals.display', compact('ritual', 'slideshow', 'announcement', 'venue_title'));
     }
 
@@ -178,9 +179,11 @@ class RitualController extends Controller
         $rituals = config('constants.rituals');
         $venues = Venue::all();
         $venue_names = [];
-        foreach($venues as $venue)
+        foreach ($venues as $venue) {
             $venue_names[] = $venue->name;
+        }
         $cultures = config('constants.cultures');
+
         return view('rituals.create', compact('venue_names', 'rituals', 'cultures'));
     }
 
@@ -190,13 +193,12 @@ class RitualController extends Controller
     public function store(Request $request): RedirectResponse
     {
 
-
-        $ritual = new Ritual();
+        $ritual = new Ritual;
         $item = request('year');
         $ritual->year = ($item === null) ? '' : $item;
         $item = request('name');
         $ritual->name = ($item === null) ? '' : $item;
-        $item = $ritual->year . "_" . $ritual->name;
+        $item = $ritual->year.'_'.$ritual->name;
         $ritual->liturgy_base = ($item === null) ? '' : $item;
         $item = request('culture');
         $ritual->culture = ($item === null) ? '' : $item;
@@ -207,12 +209,10 @@ class RitualController extends Controller
             ->first();
         if ($previous !== null) {
             return back()->with('error', 'Ritual year and name already used! ');
- /*           return redirect('/rituals/create'); */
+            /*           return redirect('/rituals/create'); */
         }
 
         /* check that announcement exists */
-
-
 
         $ritual->save();
 

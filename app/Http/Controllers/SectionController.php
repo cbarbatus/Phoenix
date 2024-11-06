@@ -24,10 +24,9 @@ class SectionController extends Controller
                 return view('sections.index', compact('sections'));
             }
         }
+
         return redirect('/');
     }
-
-
 
     /**
      * Show the form for editing the specified resource.
@@ -43,10 +42,9 @@ class SectionController extends Controller
                 return view('sections.edit', compact('section', 'elements'));
             }
         }
+
         return redirect('/');
     }
-
-
 
     /**
      * Turn on the showit flag.
@@ -65,6 +63,7 @@ class SectionController extends Controller
         $thesection = \App\Models\Section::findOrFail($id);
         $thesection->showit = 1;
         $thesection->save();
+
         /*
         var_dump("stopped at section.on", $id, $thesection); exit();
         */
