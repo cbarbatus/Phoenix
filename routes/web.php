@@ -39,7 +39,6 @@ Route::get('/sections/{id}/destroy', [SectionController::class, 'destroy']);
 Route::get('/sections/{id}/on', [SectionController::class, 'on']);
 Route::get('/sections/{id}/off', [SectionController::class, 'off']);
 
-
 Route::get('/slideshows', [SlideshowController::class, 'index']);
 Route::get('/slideshows/{admin}/list', [SlideshowController::class, 'list']);
 Route::post('/slideshows', [SlideshowController::class, 'store']);
@@ -104,7 +103,8 @@ Route::get('/grove/', [GroveController::class, 'index']);
 
 Route::get('/liturgy/find', [LiturgyController::class, 'find']);
 Route::post('/liturgy/list', [LiturgyController::class, 'list']);
-Route::get('/liturgy/{id}/get', [LiturgyController::class, 'get']);Route::get('/venues', [VenueController::class, 'index']);
+Route::get('/liturgy/{id}/get', [LiturgyController::class, 'get']);
+Route::get('/venues', [VenueController::class, 'index']);
 
 Route::post('/venues', [VenueController::class, 'store']);
 Route::get('/venues/create', [VenueController::class, 'create']);
@@ -125,7 +125,6 @@ Route::get('/members/{id}/sure', [MemberController::class, 'sure']);
 Route::get('/members/{id}/destroy', [MemberController::class, 'destroy']);
 Route::get('/members/join', [MemberController::class, 'join']);
 Route::post('/members/join', [MemberController::class, 'savejoin']);
-
 
 Route::get('/users', [UserController::class, 'index']);
 Route::post('/users/create', [UserController::class, 'create']);
@@ -175,7 +174,6 @@ Route::post('/votes/create', [VoteController::class, 'create']);
 
 Route::get('/roles', [RoleController::class, 'roles']);
 Route::get('/permissions', [RoleController::class, 'permissions']);
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

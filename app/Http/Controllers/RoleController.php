@@ -5,15 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-
 
 class RoleController extends Controller
-
 {
     /**
      * Display a listing of roles and permissions.
@@ -25,9 +21,11 @@ class RoleController extends Controller
             if ($user->hasRole('admin')) {
                 $roles = Role::all();
                 $permissions = Permission::all();
+
                 return view('roles.index', compact('roles', 'permissions'));
             }
         }
+
         return redirect('/');
     }
 
@@ -44,9 +42,9 @@ class RoleController extends Controller
                 return view('roles.create');
             }
         }
+
         return redirect('/');
     }
-
 
     /**
      * Create the role
@@ -55,9 +53,9 @@ class RoleController extends Controller
     {
         $item = request('name');
         $role = Role::create(['name' => $item]);
+
         return redirect('/roles');
     }
-
 
     /**
      * Delete a role, before destroy, ask sure.
@@ -78,7 +76,6 @@ class RoleController extends Controller
         return redirect('/roles')->with('success', 'Role was deleted');
     }
 
-
     /*   MAINTAIN PERMISSIONS  */
 
     /**
@@ -92,9 +89,9 @@ class RoleController extends Controller
                 return view('roles.pcreate');
             }
         }
+
         return redirect('/');
     }
-
 
     /**
      * Create the permission
@@ -103,9 +100,9 @@ class RoleController extends Controller
     {
         $item = request('name');
         $permission = Permission::create(['name' => $item]);
+
         return redirect('/roles');
     }
-
 
     /**
      * Delete a permission, before destroy, ask sure.
@@ -122,13 +119,11 @@ class RoleController extends Controller
     {
         $permission = Permission::where('name', $name)->firstOrFail();
         $permission->delete();
+
         return redirect('/roles')->with('success', 'Permission was deleted');
     }
 
-
-
     /*   ASSOCIATE PERMISSIONS WITH ROLES   */
-
 
     /**
      * Show the form for editing the specified resource.
@@ -137,9 +132,9 @@ class RoleController extends Controller
     {
         $role = Role::where('name', $name)->firstOrFail();
         $pnames = $role->permissions;
+
         return view('roles.edit', compact(['role', 'pnames']));
     }
-
 
     /**
      * Remove the permission from role.
@@ -149,10 +144,10 @@ class RoleController extends Controller
         $role = Role::where('name', $name)->firstOrFail();
         $role->revokePermissionTo($pname);
         $pnames = $role->permissions;
+
         return redirect('/roles/'.$name.'/edit');
 
     }
-
 
     /**
      * Add permission to role.
@@ -171,8 +166,7 @@ class RoleController extends Controller
         $permissions = Permission::all();
         $pname = $request->input('permission_name');
         $role->givePermissionTo($pname);
+
         return redirect('/roles/'.$name.'/edit');
     }
-
-
 }

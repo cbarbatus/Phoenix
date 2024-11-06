@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Announcement;
-use App\Models\Venue;
 use App\Models\Element;
-use App\Models\Section;
+use App\Models\Venue;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,9 +21,11 @@ class AnnouncementController extends Controller
             $user = Auth::user();
             if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 $announcements = Announcement::all();
+
                 return view('announcements.index', compact('announcements'));
             }
         }
+
         return redirect('/');
     }
 
@@ -32,7 +34,6 @@ class AnnouncementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
     public function create(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -40,20 +41,20 @@ class AnnouncementController extends Controller
             if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 $locations = Venue::all();
                 $rituals = config('constants.rituals');
+
                 return view('announcements.create', compact('locations', 'rituals'));
             }
         }
+
         return redirect('/');
     }
-
-
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request): RedirectResponse
     {
-        $announcement = new Announcement();
+        $announcement = new Announcement;
 
         $item = request('year');
         $announcement->year = ($item === null) ? '' : $item;
@@ -83,9 +84,11 @@ class AnnouncementController extends Controller
             $user = Auth::user();
             if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 $announcement = Announcement::findOrFail($id);
+
                 return view('announcements.show', compact('announcement'));
             }
         }
+
         return redirect('/');
     }
 
@@ -100,9 +103,11 @@ class AnnouncementController extends Controller
                 $announcement = Announcement::findOrFail($id);
                 $locations = Venue::all();
                 $rituals = config('constants.rituals');
+
                 return view('announcements.edit', compact('announcement', 'locations', 'rituals'));
             }
         }
+
         return redirect('/');
     }
 
@@ -140,7 +145,7 @@ class AnnouncementController extends Controller
             $user = Auth::user();
             if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 $announcement = Announcement::findOrFail($id);
-                $cover_pic = "<img src=\"/img/" . $announcement->picture_file . "\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; height:auto; border:5px groove black;\" >";
+                $cover_pic = '<img src="/img/'.$announcement->picture_file.'" style="display:block; margin-left:auto; margin-right:auto; width:100%; height:auto; border:5px groove black;" >';
 
                 $venue = Venue::where('name', '=', $announcement->venue_name)->first();
                 $driving = $venue->directions;
@@ -159,22 +164,23 @@ class AnnouncementController extends Controller
                         case 'when':
                             $when24 = $announcement->when;
                             $whent = substr($when24, 11, 2);
-                            if ($whent > 13)
+                            if ($whent > 13) {
                                 $whent -= 12;
-                            $whenap = substr($when24, 0, 11) . $whent . "PM";
-                            $element->item = "WHEN: " . $whenap;
+                            }
+                            $whenap = substr($when24, 0, 11).$whent.'PM';
+                            $element->item = 'WHEN: '.$whenap;
                             break;
                         case 'where':
-                            $element->item = "WHERE: " . $venue->title;
+                            $element->item = 'WHERE: '.$venue->title;
                             break;
                         case 'notes':
                             $element->item = $announcement->notes;
                             break;
                         case 'driving':
-                            $element->item = "DRIVING DIRECTIONS: " . $driving;
+                            $element->item = 'DRIVING DIRECTIONS: '.$driving;
                             break;
                         case 'map':
-                            $element->item = 'Here is a Google Map to the ritual site.  <a href=" ' . $map . ' ">GOOGLE MAP LINK</a>';
+                            $element->item = 'Here is a Google Map to the ritual site.  <a href=" '.$map.' ">GOOGLE MAP LINK</a>';
                             break;
                     }
                     $element->save();
@@ -184,7 +190,6 @@ class AnnouncementController extends Controller
 
         return redirect('/');
     }
-
 
     /**
      * Before destroy, ask sure.

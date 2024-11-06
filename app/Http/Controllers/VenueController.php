@@ -23,6 +23,7 @@ class VenueController extends Controller
                 return view('venues.index', compact('venues'));
             }
         }
+
         return redirect('/');
 
     }
@@ -47,7 +48,7 @@ class VenueController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $venue = new Venue();
+        $venue = new Venue;
         $item = request('name');
         $venue->name = ($item === null) ? '' : $item;
         $item = request('title');
@@ -110,6 +111,7 @@ class VenueController extends Controller
         $item = request('directions');
         $venue->directions = ($item === null) ? '' : $item;
         $venue->save();
+
         return redirect('/venues');
     }
 

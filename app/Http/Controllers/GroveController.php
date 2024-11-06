@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
-use App\Models\User;
-use App\Models\Element;
-use App\Models\Ritual;
 use App\Models\Announcement;
+use App\Models\Element;
+use App\Models\Member;
+use App\Models\Ritual;
+use App\Models\User;
 use Config;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,23 +20,24 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class GroveController extends Controller
 {
-
     public function bylaws(): BinaryFileResponse|RedirectResponse
     {
         if (Auth::check()) {
             $fileName = 'bylaws.pdf';
             $location = storage_path('app/grove');
             $fullName = $location.'/'.$fileName;
+
             return response()->file($fullName);
         }
+
         return redirect('/');
     }
 
-
     public function pay(): View|RedirectResponse
     {
-        if (Auth::check())
+        if (Auth::check()) {
             return view('grove.pay');
+        }
 
         return redirect('/');
 
@@ -46,9 +47,11 @@ class GroveController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole('admin'))
+            if ($user->hasRole('admin')) {
                 return view('grove.contact');
+            }
         }
+
         return redirect('/');
     }
 
@@ -57,16 +60,10 @@ class GroveController extends Controller
         return view('grove.contactus');
     }
 
-
-
-
     public function thanks(): View
     {
         return view('grove.thanks');
     }
-
-
-
 
     public function schedule(): View|RedirectResponse
     {
@@ -76,9 +73,11 @@ class GroveController extends Controller
                 /* get id of "Schedule" element */
                 $element = Element::where('name', '=', 'Schedule')
                     ->first();
-                return view('grove.schedule' , ['element' => $element]);
+
+                return view('grove.schedule', ['element' => $element]);
             }
         }
+
         return redirect('/');
     }
 
@@ -92,73 +91,67 @@ class GroveController extends Controller
         return redirect('/');
     }
 
-
-
     public function upload(): View|RedirectResponse
     {
 
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole('admin'))
+            if ($user->hasRole('admin')) {
                 return view('grove.upload');
+            }
         }
 
         return redirect('/');
 
-
     }
-
-
 
     public function uploadlit($id): View|RedirectResponse
     {
         $ritual = Ritual::findOrFail($id);
-        $litname = $ritual->year . "_" . $ritual->name . '.htm';
+        $litname = $ritual->year.'_'.$ritual->name.'.htm';
         if (Auth::check()) {
             $user = Auth::user();
             if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 $ritual->liturgy_base = $litname;
                 $ritual->save();
             }
-                return view('grove.uploadlit', compact(['litname', 'id']));
+
+            return view('grove.uploadlit', compact(['litname', 'id']));
         }
 
         return redirect('/');
 
-
     }
-
 
     /* upload announcement picture file */
     public function uploadpic($id): View|RedirectResponse
     {
         $announcement = Announcement::findOrFail($id);
-        $picname = $announcement->year . "_" . $announcement->name . '.jpg';
+        $picname = $announcement->year.'_'.$announcement->name.'.jpg';
 
         $announcement->picture_file = $picname;
         $announcement->save();
 
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->hasRole(['admin', 'SeniorDruid']))
+            if ($user->hasRole(['admin', 'SeniorDruid'])) {
                 return view('grove.uploadpic', compact('picname'));
+            }
         }
 
         return redirect('/');
 
-
     }
-
-
 
     public function uploadFile(Request $request): RedirectResponse
     {
         $file = $request->file('file');
         if (is_null($file)) {
             Session::flash('warning', 'No File Selected.');
+
             return redirect('grove/upload');
         }
-            // File Details
+        // File Details
         $filename = $file->getClientOriginalName();
         $extension = $file->getClientOriginalExtension();
         $tempPath = $file->getRealPath();
@@ -207,10 +200,10 @@ class GroveController extends Controller
         } else {
             Session::flash('warning', 'Invalid File Extension.');
         }
+
         // Redirect to index
         return redirect('grove/upload');
     }
-
 
     public function litfile(Request $request): RedirectResponse
     {
@@ -218,6 +211,7 @@ class GroveController extends Controller
         $file = $request->file('file');
         if (is_null($file)) {
             Session::flash('warning', 'No File Selected.');
+
             return redirect("/rituals/$id");
         }
 
@@ -226,7 +220,6 @@ class GroveController extends Controller
         $extension = $file->getClientOriginalExtension();
         $fileSize = $file->getSize();
         $litfile = $request->litfile;
-
 
         // 2MB in Bytes
         $maxFileSize = 2097152;
@@ -252,12 +245,12 @@ class GroveController extends Controller
         return redirect("/rituals/$id");
     }
 
-
     public function picfile(Request $request): RedirectResponse
     {
         $file = $request->file('file');
         if (is_null($file)) {
             Session::flash('warning', 'No File Selected.');
+
             return redirect('/announcements');
         }
 
@@ -291,16 +284,15 @@ class GroveController extends Controller
         return redirect('/announcements');
     }
 
-
     /* public allowed to donate */
     public function donate(): View
     {
         return view('grove.donate');
     }
 
-/* ************************************************************** */
+    /* ************************************************************** */
 
-/* hacks for specific internal testing or setup */
+    /* hacks for specific internal testing or setup */
 
     /**
      * Setup user roles and permissions.
@@ -325,7 +317,7 @@ class GroveController extends Controller
 
         foreach ($members as $member) {
             if ($member->user_id == 0) {
-                $user = new user();
+                $user = new user;
                 $user->name = $member->first_name.' '.$member->last_name;
                 $user->email = $member->email;
                 $user->password = '';
@@ -436,6 +428,4 @@ class GroveController extends Controller
         $names = Config::get('constants.cultures');
         dd($names);
     }
-
-
 }

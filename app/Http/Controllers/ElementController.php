@@ -41,7 +41,7 @@ class ElementController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $element = new Element();
+        $element = new Element;
         $item = request('section_id');
         $element->section_id = ($item === null) ? '' : $item;
         $item = request('name');

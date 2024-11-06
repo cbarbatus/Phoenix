@@ -25,6 +25,7 @@ class UserController extends Controller
                 return view('users.index', compact('users'));
             }
         }
+
         return redirect('/');
     }
 
@@ -36,9 +37,11 @@ class UserController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             dd('in create');
-            if ($user->hasRole('admin'))
+            if ($user->hasRole('admin')) {
                 return view('users.create');
+            }
         }
+
         return redirect('/');
     }
 
@@ -47,7 +50,7 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $user = new user();
+        $user = new user;
         $item = request('name');
         $user->name = ($item === null) ? '' : $item;
         $item = request('email');
@@ -67,8 +70,8 @@ class UserController extends Controller
             $user = Auth::user();
             if ($user->hasRole('admin')) {
                 $member = Member::findOrFail($id);
-                $user = new user();
-                $user->name = $member->first_name . $member->last_name;
+                $user = new user;
+                $user->name = $member->first_name.$member->last_name;
                 $user->email = $member->email;
                 $user->password = '';
                 $user->assignRole('member');
@@ -79,6 +82,7 @@ class UserController extends Controller
                 return redirect('/members');
             }
         }
+
         return redirect('/');
     }
 
@@ -105,19 +109,22 @@ class UserController extends Controller
             $user = Auth::user();
             if ($user->hasRole('admin')) {
                 $user = User::findOrFail($id);
-                $checks = array();
+                $checks = [];
                 $roles = Role::all();
 
                 foreach ($roles as $role) {
                     $name = $role->name;
-                    if ($user->hasRole($name))
+                    if ($user->hasRole($name)) {
                         $checks[$name] = 'checked';
-                    else
+                    } else {
                         $checks[$name] = '';
+                    }
                 }
+
                 return view('users.edit', compact('user', 'roles', 'checks'));
             }
         }
+
         return redirect('/');
     }
 
